@@ -1,0 +1,30 @@
+task bintrayDelete << {
+    def deleteUrl = ['curl', '-u',
+                     bintrayUser + ':' + bintrayApiKey,
+                     '-X',
+                     'DELETE',
+                     "https://api.bintray.com/packages/trunkplatform/trunk-core/rxnetty-prometheus/versions/${version}/"].execute()
+
+    println("delete: " + deleteUrl.text)
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+
+    publications = ['mavenJava']
+
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+        repo = 'trunk-core'
+        userOrg = 'trunkplatform'
+        name = 'rxnetty-prometheus'
+        desc = 'prometheus stuff for rxnetty'
+        websiteUrl = 'https://github.com/Trunkplatform/rxnetty-prometheus'
+        vcsUrl = 'https://github.com/Trunkplatform/rxnetty-prometheus.git'
+        licenses = ['Proprietary']
+        labels = ['rxnetty', 'prometheus', 'monitoring', 'metrics']
+        publicDownloadNumbers = true
+    }
+}

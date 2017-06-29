@@ -1,0 +1,78 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
+group = 'com.trunk.commons'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply from: 'gradle/bintray.gradle'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        credentials{
+            username bintrayUser
+            password bintrayApiKey
+        }
+        url  "http://dl.bintray.com/trunkplatform/trunk-java-oss"
+    }
+}
+
+version = project.hasProperty('app_version') ? app_version : 'local'
+
+dependencies {
+    compile 'io.reactivex:rxnetty-http:0.5.2'
+
+    compile 'com.google.inject:guice:4.0'
+    compile 'org.pk11.rxnetty:rxnetty-router-core:1.1.0'
+    compile 'org.pk11.rxnetty:rxnetty-router-cors:1.1.0'
+    compile "io.prometheus:simpleclient:${prometheus_version}"
+    compile "io.prometheus:simpleclient_common:${prometheus_version}"
+    compile "io.prometheus:simpleclient_hotspot:${prometheus_version}"
+    compile "io.prometheus:simpleclient_logback:${prometheus_version}"
+
+    testCompile 'org.testng:testng:6.8'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom.withXml {
+                asNode().dependencies.'*'.findAll() {
+                    it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each() {
+                    it.scope*.value = 'compile'
+                }
+            }
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+        }
+    }
+}
