@@ -32,6 +32,7 @@ dependencies {
     compile 'com.google.inject:guice:4.0'
     compile 'org.pk11.rxnetty:rxnetty-router-core:1.1.0'
     compile 'org.pk11.rxnetty:rxnetty-router-cors:1.1.0'
+    compile 'org.functionaljava:functionaljava-java-core:4.5'
     compile "io.prometheus:simpleclient:${prometheus_version}"
     compile "io.prometheus:simpleclient_common:${prometheus_version}"
     compile "io.prometheus:simpleclient_hotspot:${prometheus_version}"

@@ -24,18 +24,18 @@ public class EventMetric {
       .help("The count of " + help)
       .labelNames("state")
       .register(registry);
-    Summary baseHistogram = Summary.build()
+    Summary baseSummary = Summary.build()
       .name(name + "_latency_seconds")
       .help("The latency in seconds of " + help)
       .labelNames("state")
       .register(registry);
 
     start = baseCounter.labels("start");
-    startLatency = baseHistogram.labels("start");
+    startLatency = baseSummary.labels("start");
     success = baseCounter.labels("success");
-    successLatency = baseHistogram.labels("success");
+    successLatency = baseSummary.labels("success");
     failed = baseCounter.labels("failed");
-    failureLatency = baseHistogram.labels("failed");
+    failureLatency = baseSummary.labels("failed");
   }
 
   public void start() {
